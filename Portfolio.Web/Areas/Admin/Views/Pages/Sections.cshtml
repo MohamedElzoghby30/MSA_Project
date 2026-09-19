@@ -1,0 +1,49 @@
+@model List<SectionEditDto>
+@inject AppLocalizer L
+@{
+    ViewData["Title"] = L.Get("Page Sections");
+    var pageVm = ViewBag.Page as PageEditDto;
+    var isArabic = L.IsArabic;
+    var pageName = isArabic ? (pageVm?.NameAr ?? pageVm?.NameEn ?? pageVm?.Name ?? "Page") : (pageVm?.NameEn ?? pageVm?.Name ?? "Page");
+}
+<div class="page-head">
+    <div>
+        <span class="eyebrow-admin">PAGE BUILDER · SECTIONS</span>
+        <h2>@pageName · @L.Get("Sections")</h2>
+        <p>@L.Get("Build the page from reusable sections, visual settings and animation presets.")</p>
+    </div>
+    <a class="btn btn-primary" asp-action="CreateSection" asp-route-pageId="@pageVm?.Id">+ @L.Get("Add Section")</a>
+</div>
+<div class="card">
+    @if (!Model.Any())
+    {
+        <div class="empty">@L.Get("No sections yet. Add your first section to start building this page.")</div>
+    }
+    else
+    {
+        <div class="section-builder-list">
+            @foreach (var s in Model.OrderBy(x => x.SortOrder))
+            {
+                var title = isArabic ? (s.TitleAr ?? s.TitleEn ?? s.Title) : (s.TitleEn ?? s.Title);
+                <div class="section-row">
+                    <div class="section-order">#@s.SortOrder</div>
+                    <div class="grow">
+                        <span class="badge badge-gold">@L.Get(s.SectionType)</span>
+                        <strong>@(title ?? L.Get("Untitled section"))</strong>
+                        @if (!isArabic && !string.IsNullOrWhiteSpace(s.TitleAr)) { <small dir="rtl">@s.TitleAr</small> }
+                        <small>@L.Get("Animation"): @(string.IsNullOrWhiteSpace(s.Animation) ? L.Get("None") : L.Get(s.Animation)) · @(s.IsVisible ? L.Get("Visible") : L.Get("Hidden"))</small>
+                    </div>
+                    <div class="section-actions">
+                        <a class="btn btn-ghost" asp-action="EditSection" asp-route-id="@s.Id">@L.Get("Edit")</a>
+                        <form asp-action="DeleteSection" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@s.Id" />
+                            <input type="hidden" name="pageId" value="@s.PageId" />
+                            <button class="btn btn-danger" type="submit">@L.Get("Delete")</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

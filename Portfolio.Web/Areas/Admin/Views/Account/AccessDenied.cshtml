@@ -1,0 +1,9 @@
+@inject AppLocalizer L
+@{
+    ViewData["Title"] = "Access Denied";
+}
+<div class="card" style="max-width:600px;margin:50px auto;text-align:center">
+    <h2>@L.Get("Access Denied")</h2>
+    <p style="color:var(--ui-muted)">@L.Get("You do not have permission to perform this action.")</p>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">@L.Get("Back to Dashboard")</a>
+</div>

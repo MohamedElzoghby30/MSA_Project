@@ -1,0 +1,106 @@
+@using Microsoft.AspNetCore.Identity
+@using Portfolio.Data.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject Portfolio.Business.Interfaces.IThemeService ThemeService
+@inject AppLocalizer L
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var fullName = currentUser?.FullName ?? User.Identity?.Name ?? "Administrator";
+    var initial = string.IsNullOrWhiteSpace(fullName) ? "A" : fullName.Trim()[0].ToString().ToUpperInvariant();
+    var theme = await ThemeService.GetAsync();
+    var nextCulture = L.LanguageCode == "ar" ? "en" : "ar";
+    var languageLabel = L.LanguageCode == "ar" ? "EN" : "AR";
+    var currentUrl = Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
+}
+<!doctype html>
+<html lang="@L.LanguageCode" dir="@L.Direction">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>@L.Get(ViewData["Title"]?.ToString() ?? "MSA Admin") · MSA Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/admin/css/admin.css" asp-append-version="true" />
+</head>
+<body data-theme-mode="@theme.ThemeMode"
+      style="--gold:@theme.AccentColor;--gold2:@theme.PrimaryColor;--gold3:@theme.AccentColor;--ui-secondary:@theme.SecondaryColor;--light-bg:@theme.LightBackground;--light-surface:@theme.LightSurface;--light-surface-alt:@theme.LightSurfaceAlt;--light-text:@theme.LightText;--light-muted:@theme.LightMutedText;--light-border:@theme.LightBorder;--light-header:@theme.LightHeader;--light-footer:@theme.LightFooter;--light-input:@theme.LightInput;--light-shadow:@theme.LightShadow;--dark-bg:@theme.DarkBackground;--dark-surface:@theme.DarkSurface;--dark-surface-alt:@theme.DarkSurfaceAlt;--dark-text:@theme.DarkText;--dark-muted:@theme.DarkMutedText;--dark-border:@theme.DarkBorder;--dark-header:@theme.DarkHeader;--dark-footer:@theme.DarkFooter;--dark-input:@theme.DarkInput;--dark-shadow:@theme.DarkShadow;--success:@theme.SuccessColor;--warning:@theme.WarningColor;--danger:@theme.DangerColor;--radius:@(theme.BorderRadius)px;--button-radius:@(theme.ButtonRadius)px;--container:@(theme.ContainerWidth)px;--animations:@(theme.EnableAnimations ? "1" : "0");">
+<div class="admin-shell">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <a class="brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <span class="brand-icon"><img src="~/img/brand/msa-mark.svg" alt="MSA" /></span>
+                <span class="brand-text"><strong>MSA GOLD</strong><span>ADMINISTRATION</span></span>
+            </a>
+            <button class="sidebar-close" id="sidebarClose" type="button" aria-label="@L.Get("Close")">×</button>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Admin navigation">
+            <div class="nav-section">
+                <span class="nav-section-title">@L.Get("MAIN")</span>
+                <a class="nav-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-8h-7v8Zm0-16v6h7V4h-7Z"/></svg></span><span class="nav-label">@L.Get("Dashboard")</span></a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-title">@L.Get("CONTENT")</span>
+                <a class="nav-item" asp-area="Admin" asp-controller="Company" asp-action="Index"><span class="nav-icon">▣</span><span class="nav-label">@L.Get("Company")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="Products" asp-action="Index"><span class="nav-icon">◆</span><span class="nav-label">@L.Get("Products")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="Services" asp-action="Index"><span class="nav-icon">✦</span><span class="nav-label">@L.Get("Services")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="Pages" asp-action="Index"><span class="nav-icon">▤</span><span class="nav-label">@L.Get("Pages & Sections")</span></a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-title">@L.Get("WEBSITE")</span>
+                <a class="nav-item" asp-area="Admin" asp-controller="Appearance" asp-action="Index"><span class="nav-icon">◉</span><span class="nav-label">@L.Get("Appearance")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="Settings" asp-action="Index"><span class="nav-icon">⚙</span><span class="nav-label">@L.Get("Settings")</span></a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-title">@L.Get("MANAGEMENT")</span>
+                <a class="nav-item" asp-area="Admin" asp-controller="Messages" asp-action="Index"><span class="nav-icon">✉</span><span class="nav-label">@L.Get("Messages")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="Analytics" asp-action="Index"><span class="nav-icon">▥</span><span class="nav-label">@L.Get("Analytics")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="Users" asp-action="Index"><span class="nav-icon">◉</span><span class="nav-label">@L.Get("Users")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="Roles" asp-action="Index"><span class="nav-icon">⬡</span><span class="nav-label">@L.Get("Roles & Permissions")</span></a>
+                <a class="nav-item" asp-area="Admin" asp-controller="AuditLogs" asp-action="Index"><span class="nav-icon">▤</span><span class="nav-label">@L.Get("Audit Logs")</span></a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user"><div class="user-avatar">@initial</div><div class="user-info"><strong>@fullName</strong><span>@L.Get("Administrator")</span></div></div>
+            <form asp-area="Admin" asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button class="logout-btn" type="submit" title="@L.Get("Sign out")" aria-label="@L.Get("Sign out")">↪</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu"><span></span><span></span><span></span></button>
+                <div class="topbar-title"><span>MSA GOLD & JEWELLERY</span><h1>@L.Get(ViewData["Title"]?.ToString() ?? "Dashboard")</h1></div>
+            </div>
+            <div class="topbar-right">
+                <a class="preference-link language-switch-admin" href="/Language/Set?culture=@nextCulture&returnUrl=@Uri.EscapeDataString(currentUrl)" title="@L.Get("Language")"><span class="lang-icon">文</span><span class="lang-text">@languageLabel</span></a>
+                <button class="preference-button theme-toggle-pill" type="button" data-theme-toggle title="@L.Get("Toggle light / night mode")" aria-label="@L.Get("Toggle light / night mode")"><span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span><span class="theme-toggle-text">OFF</span></button>
+                <a href="/" target="_blank" class="view-site">@L.Get("View Website") ↗</a>
+                <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">●</button>
+                <div class="topbar-user"><div class="topbar-avatar">@initial</div><div class="topbar-user-info"><strong>@fullName</strong><span>@L.Get("Administrator")</span></div></div>
+            </div>
+        </header>
+
+        <section class="admin-content">
+            @if (TempData["Success"] is string success) { <div class="flash success">@L.Get(success)</div> }
+            @if (TempData["Error"] is string error) { <div class="flash error">@L.Get(error)</div> }
+            @RenderBody()
+        </section>
+    </main>
+</div>
+<script src="~/admin/js/admin.js" asp-append-version="true"></script>
+<script src="~/js/ui-preferences.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

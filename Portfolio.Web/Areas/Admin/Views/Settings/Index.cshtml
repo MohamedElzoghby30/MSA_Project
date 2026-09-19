@@ -1,0 +1,247 @@
+@model Dictionary<string, string>
+@{
+    ViewData["Title"] = "Settings";
+
+    bool ParseBool(string key, bool fallback)
+    {
+        if (Model.TryGetValue(key, out var value) && bool.TryParse(value, out var parsed))
+            return parsed;
+        return fallback;
+    }
+
+    var localizationEnabled = ParseBool("PublicLocalizationEnabled", true);
+    var darkModeEnabled = ParseBool("PublicDarkModeEnabled", true);
+    var defaultLanguage = Model.TryGetValue("PublicDefaultLanguage", out var defaultLang) && defaultLang is "ar" ? "ar" : "en";
+
+    var canEditGeneral = ViewBag.CanEditGeneral is true;
+    var canEditLocalization = ViewBag.CanEditLocalization is true;
+    var canEditDarkMode = ViewBag.CanEditDarkMode is true;
+}
+
+<div class="page-head settings-page-head">
+    <div>
+        <span class="eyebrow-admin">@L.Get("WEBSITE CONTROL")</span>
+        <h2>@L.Get("Settings")</h2>
+        <p>@L.Get("Control website features, global SEO defaults and public experience switches.")</p>
+    </div>
+    <div class="settings-status-cluster">
+        <span class="settings-status"><i></i>@L.Get("Live configuration")</span>
+    </div>
+</div>
+
+<div class="settings-layout">
+
+    <section class="card settings-feature-card">
+        <div class="settings-card-head">
+            <div class="settings-card-number">01</div>
+            <div>
+                <span class="settings-kicker">@L.Get("PUBLIC EXPERIENCE")</span>
+                <h3>@L.Get("Website Translation")</h3>
+                <p>@L.Get("Allow visitors to switch between English and Arabic across the public website.")</p>
+            </div>
+            <span class="feature-status @(localizationEnabled ? "is-enabled" : "is-disabled")">
+                <i></i>@(localizationEnabled ? L.Get("Enabled") : L.Get("Disabled"))
+            </span>
+        </div>
+
+        <div class="feature-setting-body">
+            <div class="feature-copy">
+                <div class="feature-icon">文</div>
+                <div>
+                    <strong>@L.Get("English / Arabic")</strong>
+                    <span>@L.Get("When disabled, the public website stays in English and the language switcher is hidden.")</span>
+                </div>
+            </div>
+
+            <form asp-action="SaveLocalization" method="post" class="feature-setting-actions">
+                @Html.AntiForgeryToken()
+
+                <div class="feature-default-language">
+                    <label for="defaultLanguage">@L.Get("Default public language")</label>
+                    <select id="defaultLanguage" name="defaultLanguage" class="select" disabled="@(!canEditLocalization ? "disabled" : null)">
+                        <option value="en" selected="@(defaultLanguage == "en" ? "selected" : null)">English</option>
+                        <option value="ar" selected="@(defaultLanguage == "ar" ? "selected" : null)">العربية</option>
+                    </select>
+                </div>
+
+                <label class="feature-toggle @(localizationEnabled ? "is-on" : "") @(canEditLocalization ? "" : "is-locked")">
+                    <input type="checkbox"
+                           name="enabled"
+                           value="true"
+                           checked="@(localizationEnabled ? "checked" : null)"
+                           disabled="@(!canEditLocalization ? "disabled" : null)" />
+                    <span class="feature-toggle-track"><span class="feature-toggle-thumb"></span></span>
+                    <span class="feature-toggle-copy">
+                        <b>@(localizationEnabled ? "ON" : "OFF")</b>
+                        <small>@L.Get("Enable translation")</small>
+                    </span>
+                </label>
+
+                @if (canEditLocalization)
+                {
+                    <button class="btn btn-primary feature-save-btn" type="submit">@L.Get("Save Translation Setting")</button>
+                }
+                else
+                {
+                    <span class="permission-lock">🔒 @L.Get("No permission to change this setting")</span>
+                }
+            </form>
+        </div>
+
+        <div class="setting-permission">
+            <span>@L.Get("Required permission")</span>
+            <code>Settings.Localization</code>
+            <span class="permission-state @(canEditLocalization ? "allowed" : "blocked")">
+                @(canEditLocalization ? L.Get("Allowed") : L.Get("Not assigned"))
+            </span>
+        </div>
+    </section>
+
+    <section class="card settings-feature-card">
+        <div class="settings-card-head">
+            <div class="settings-card-number">02</div>
+            <div>
+                <span class="settings-kicker">@L.Get("PUBLIC EXPERIENCE")</span>
+                <h3>@L.Get("Dark / Night Mode")</h3>
+                <p>@L.Get("Allow visitors to use the premium dark night experience. The default mode remains controlled from Appearance.")</p>
+            </div>
+            <span class="feature-status @(darkModeEnabled ? "is-enabled" : "is-disabled")">
+                <i></i>@(darkModeEnabled ? L.Get("Enabled") : L.Get("Disabled"))
+            </span>
+        </div>
+
+        <div class="feature-setting-body">
+            <div class="feature-copy">
+                <div class="feature-icon feature-icon-moon">☾</div>
+                <div>
+                    <strong>@L.Get("Light / Night")</strong>
+                    <span>@L.Get("When disabled, the public website is locked to the light appearance and the night toggle is hidden.")</span>
+                </div>
+            </div>
+
+            <form asp-action="SaveDarkMode" method="post" class="feature-setting-actions">
+                @Html.AntiForgeryToken()
+                <label class="feature-toggle @(darkModeEnabled ? "is-on" : "") @(canEditDarkMode ? "" : "is-locked")">
+                    <input type="checkbox"
+                           name="enabled"
+                           value="true"
+                           checked="@(darkModeEnabled ? "checked" : null)"
+                           disabled="@(!canEditDarkMode ? "disabled" : null)" />
+                    <span class="feature-toggle-track"><span class="feature-toggle-thumb"></span></span>
+                    <span class="feature-toggle-copy">
+                        <b>@(darkModeEnabled ? "ON" : "OFF")</b>
+                        <small>@L.Get("Enable night mode")</small>
+                    </span>
+                </label>
+
+                @if (canEditDarkMode)
+                {
+                    <button class="btn btn-primary feature-save-btn" type="submit">@L.Get("Save Dark Mode Setting")</button>
+                }
+                else
+                {
+                    <span class="permission-lock">🔒 @L.Get("No permission to change this setting")</span>
+                }
+            </form>
+        </div>
+
+        <div class="setting-permission">
+            <span>@L.Get("Required permission")</span>
+            <code>Settings.DarkMode</code>
+            <span class="permission-state @(canEditDarkMode ? "allowed" : "blocked")">
+                @(canEditDarkMode ? L.Get("Allowed") : L.Get("Not assigned"))
+            </span>
+        </div>
+    </section>
+
+    <section class="card settings-general-card">
+        <div class="settings-card-head compact">
+            <div class="settings-card-number">03</div>
+            <div>
+                <span class="settings-kicker">@L.Get("GENERAL SETTINGS")</span>
+                <h3>@L.Get("Website Settings")</h3>
+                <p>@L.Get("Global title, SEO and analytics defaults.")</p>
+            </div>
+        </div>
+
+        <form asp-action="Save" method="post">
+            @Html.AntiForgeryToken()
+
+            <fieldset class="settings-fieldset" disabled="@(!canEditGeneral ? "disabled" : null)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>@L.Get("Website Title")</label>
+                        <input name="values[WebsiteTitle]" class="input" value="@(Model.TryGetValue("WebsiteTitle", out var a) ? a : "")" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L.Get("Website Description")</label>
+                        <input name="values[WebsiteDescription]" class="input" value="@(Model.TryGetValue("WebsiteDescription", out var b) ? b : "")" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L.Get("Default SEO Title")</label>
+                        <input name="values[DefaultSeoTitle]" class="input" value="@(Model.TryGetValue("DefaultSeoTitle", out var c) ? c : "")" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L.Get("Default SEO Description")</label>
+                        <input name="values[DefaultSeoDescription]" class="input" value="@(Model.TryGetValue("DefaultSeoDescription", out var d) ? d : "")" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L.Get("Contact Email")</label>
+                        <input name="values[ContactEmail]" type="email" class="input" value="@(Model.TryGetValue("ContactEmail", out var e) ? e : "")" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L.Get("Google Analytics ID")</label>
+                        <input name="values[GoogleAnalyticsId]" class="input" value="@(Model.TryGetValue("GoogleAnalyticsId", out var f) ? f : "")" placeholder="Optional" />
+                    </div>
+                </div>
+
+                @if (canEditGeneral)
+                {
+                    <div class="actions">
+                        <button class="btn btn-primary" type="submit">@L.Get("Save Settings")</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="permission-lock general-lock">🔒 @L.Get("You can view these settings but do not have edit permission.")</div>
+                }
+            </fieldset>
+        </form>
+    </section>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggles = document.querySelectorAll(".feature-toggle");
+
+    toggles.forEach(function (toggle) {
+        const input = toggle.querySelector('input[type="checkbox"]');
+        const state = toggle.querySelector(".feature-toggle-copy b");
+
+        if (!input || input.disabled) {
+            return;
+        }
+
+        function syncToggle() {
+            const enabled = input.checked;
+
+            toggle.classList.toggle("is-on", enabled);
+            toggle.setAttribute("aria-checked", enabled ? "true" : "false");
+
+            if (state) {
+                state.textContent = enabled ? "ON" : "OFF";
+            }
+        }
+
+        syncToggle();
+
+        input.addEventListener("change", syncToggle);
+    });
+});
+</script>

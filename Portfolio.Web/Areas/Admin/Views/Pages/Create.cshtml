@@ -1,0 +1,77 @@
+@model PageFormModel
+@inject AppLocalizer L
+@{
+    ViewData["Title"] = L.Get("Create Page");
+}
+<div class="page-head">
+    <div>
+        <span class="eyebrow-admin">PAGE BUILDER</span>
+        <h2>@L.Get("Create Page")</h2>
+        <p>@L.Get("Create a dynamic page for the public website.")</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" class="card page-editor-card">
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+    <div class="builder-section-title">
+        <span class="builder-section-icon">01</span>
+        <div><strong>@L.Get("Page identity")</strong><small>@L.Get("Enter both English and Arabic content for the page.")</small></div>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label asp-for="NameEn">@L.Get("Name (English)")</label>
+            <input asp-for="NameEn" class="input" dir="ltr" required />
+        </div>
+        <div class="form-group">
+            <label asp-for="NameAr">@L.Get("Name (Arabic)")</label>
+            <input asp-for="NameAr" class="input" dir="rtl" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Slug">@L.Get("Slug")</label>
+            <input asp-for="Slug" class="input" dir="ltr" placeholder="about-us" />
+        </div>
+        <div class="form-group">
+            <label asp-for="SortOrder">@L.Get("Sort Order")</label>
+            <input asp-for="SortOrder" class="input" type="number" value="0" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TitleEn">@L.Get("Title (English)")</label>
+            <input asp-for="TitleEn" class="input" dir="ltr" />
+        </div>
+        <div class="form-group">
+            <label asp-for="TitleAr">@L.Get("Title (Arabic)")</label>
+            <input asp-for="TitleAr" class="input" dir="rtl" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="MetaTitleEn">@L.Get("Meta Title (English)")</label>
+            <input asp-for="MetaTitleEn" class="input" dir="ltr" />
+        </div>
+        <div class="form-group">
+            <label asp-for="MetaTitleAr">@L.Get("Meta Title (Arabic)")</label>
+            <input asp-for="MetaTitleAr" class="input" dir="rtl" />
+        </div>
+
+        <div class="form-group full">
+            <label asp-for="MetaDescriptionEn">@L.Get("Meta Description (English)")</label>
+            <textarea asp-for="MetaDescriptionEn" class="textarea" dir="ltr"></textarea>
+        </div>
+        <div class="form-group full">
+            <label asp-for="MetaDescriptionAr">@L.Get("Meta Description (Arabic)")</label>
+            <textarea asp-for="MetaDescriptionAr" class="textarea" dir="rtl"></textarea>
+        </div>
+
+        <label class="check-row">
+            <input asp-for="IsPublished" /> @L.Get("Published")
+        </label>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary" type="submit">@L.Get("Create Page")</button>
+        <a class="btn btn-ghost" asp-action="Index">@L.Get("Cancel")</a>
+    </div>
+</form>

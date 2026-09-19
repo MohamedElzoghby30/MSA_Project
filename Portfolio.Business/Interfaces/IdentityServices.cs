@@ -1,0 +1,4 @@
+using Portfolio.Business.DTOs;
+namespace Portfolio.Business.Interfaces;
+public interface IUserManagementService { Task<List<UserEditDto>> ListAsync(CancellationToken ct = default); Task<UserEditDto?> GetAsync(Guid id,CancellationToken ct=default); Task<(bool Success,string Error)> SaveAsync(UserEditDto dto,CancellationToken ct=default); Task DeleteAsync(Guid id,CancellationToken ct=default); }
+public interface IRoleManagementService { Task<List<RoleEditDto>> ListAsync(CancellationToken ct=default); Task<RoleEditDto?> GetAsync(Guid id,CancellationToken ct=default); Task<List<(Guid Id,string Name)>> PermissionsAsync(CancellationToken ct=default); Task<(bool Success,string Error)> SaveAsync(RoleEditDto dto,CancellationToken ct=default); Task DeleteAsync(Guid id,CancellationToken ct=default); }

@@ -1,0 +1,107 @@
+@model ThemeDto
+@{
+    ViewData["Title"] = "Appearance";
+}
+
+<div class="page-head page-head-stacked-mobile">
+    <div>
+        <span class="eyebrow-admin">DESIGN SYSTEM</span>
+        <h2>@L.Get("Appearance")</h2>
+        <p>@L.Get("Control the global visual identity of the website.")</p>
+    </div>
+    <div class="theme-live-pill"><span></span> <strong id="themeModeLabel">@Model.ThemeMode</strong></div>
+</div>
+
+<form asp-action="Save" method="post" class="appearance-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div class="card appearance-card">
+        <div class="form-section-title">
+            <span>01</span>
+            <div><strong>@L.Get("Theme Mode")</strong><small>Choose the default appearance and let visitors switch it locally.</small></div>
+        </div>
+        <div class="theme-mode-grid">
+            <label class="theme-mode-option"><input asp-for="ThemeMode" type="radio" value="system" /><span><b>System</b><small>Follow device settings.</small></span></label>
+            <label class="theme-mode-option"><input asp-for="ThemeMode" type="radio" value="light" /><span><b>Light</b><small>Bright premium interface.</small></span></label>
+            <label class="theme-mode-option"><input asp-for="ThemeMode" type="radio" value="dark" /><span><b>Dark / Night</b><small>Luxury dark interface.</small></span></label>
+        </div>
+    </div>
+
+    <div class="card appearance-card">
+        <div class="form-section-title"><span>02</span><div><strong>@L.Get("Shared Brand Colors")</strong><small>These colors are available in both light and dark modes.</small></div></div>
+        <div class="color-grid">
+            <div class="color-field"><label>@L.Get("Primary Color")</label><input asp-for="PrimaryColor" class="input color-text" /><input data-color-for="PrimaryColor" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Secondary Color")</label><input asp-for="SecondaryColor" class="input color-text" /><input data-color-for="SecondaryColor" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Accent Color")</label><input asp-for="AccentColor" class="input color-text" /><input data-color-for="AccentColor" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Success Color")</label><input asp-for="SuccessColor" class="input color-text" /><input data-color-for="SuccessColor" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Warning Color")</label><input asp-for="WarningColor" class="input color-text" /><input data-color-for="WarningColor" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Danger Color")</label><input asp-for="DangerColor" class="input color-text" /><input data-color-for="DangerColor" type="color" /></div>
+        </div>
+    </div>
+
+    <div class="card appearance-card">
+        <div class="form-section-title"><span>03</span><div><strong>@L.Get("Light Mode Palette")</strong><small>Fine-grained control over every major light interface surface.</small></div></div>
+        <div class="color-grid">
+            <div class="color-field"><label>@L.Get("Background")</label><input asp-for="LightBackground" class="input color-text" /><input data-color-for="LightBackground" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Surface")</label><input asp-for="LightSurface" class="input color-text" /><input data-color-for="LightSurface" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Secondary Surface")</label><input asp-for="LightSurfaceAlt" class="input color-text" /><input data-color-for="LightSurfaceAlt" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Text Color")</label><input asp-for="LightText" class="input color-text" /><input data-color-for="LightText" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Muted Text")</label><input asp-for="LightMutedText" class="input color-text" /><input data-color-for="LightMutedText" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Border Color")</label><input asp-for="LightBorder" class="input color-text" /><input data-color-for="LightBorder" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Header Color")</label><input asp-for="LightHeader" class="input color-text" /><input data-color-for="LightHeader" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Footer Color")</label><input asp-for="LightFooter" class="input color-text" /><input data-color-for="LightFooter" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Input Background")</label><input asp-for="LightInput" class="input color-text" /><input data-color-for="LightInput" type="color" /></div>
+            <div class="form-group"><label>@L.Get("Shadow")</label><input asp-for="LightShadow" class="input" /></div>
+        </div>
+    </div>
+
+    <div class="card appearance-card">
+        <div class="form-section-title"><span>04</span><div><strong>@L.Get("Dark / Night Mode Palette")</strong><small>Fine-grained control for the luxury night experience.</small></div></div>
+        <div class="color-grid">
+            <div class="color-field"><label>@L.Get("Background")</label><input asp-for="DarkBackground" class="input color-text" /><input data-color-for="DarkBackground" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Surface")</label><input asp-for="DarkSurface" class="input color-text" /><input data-color-for="DarkSurface" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Secondary Surface")</label><input asp-for="DarkSurfaceAlt" class="input color-text" /><input data-color-for="DarkSurfaceAlt" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Text Color")</label><input asp-for="DarkText" class="input color-text" /><input data-color-for="DarkText" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Muted Text")</label><input asp-for="DarkMutedText" class="input color-text" /><input data-color-for="DarkMutedText" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Border Color")</label><input asp-for="DarkBorder" class="input color-text" /><input data-color-for="DarkBorder" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Header Color")</label><input asp-for="DarkHeader" class="input color-text" /><input data-color-for="DarkHeader" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Footer Color")</label><input asp-for="DarkFooter" class="input color-text" /><input data-color-for="DarkFooter" type="color" /></div>
+            <div class="color-field"><label>@L.Get("Input Background")</label><input asp-for="DarkInput" class="input color-text" /><input data-color-for="DarkInput" type="color" /></div>
+            <div class="form-group"><label>@L.Get("Shadow")</label><input asp-for="DarkShadow" class="input" /></div>
+        </div>
+    </div>
+
+    <div class="card appearance-card">
+        <div class="form-section-title"><span>05</span><div><strong>Typography & Shape</strong><small>Control fonts, spacing feel and component shape.</small></div></div>
+        <div class="form-grid">
+            <div class="form-group"><label>@L.Get("Body Font")</label><input asp-for="FontFamily" class="input" /></div>
+            <div class="form-group"><label>@L.Get("Heading Font")</label><input asp-for="HeadingFont" class="input" /></div>
+            <div class="form-group"><label>@L.Get("Container Width")</label><input asp-for="ContainerWidth" class="input" type="number" min="800" max="2000" /></div>
+            <div class="form-group"><label>@L.Get("Border Radius")</label><input asp-for="BorderRadius" class="input" type="number" min="0" max="50" /></div>
+            <div class="form-group"><label>@L.Get("Button Radius")</label><input asp-for="ButtonRadius" class="input" type="number" min="0" max="50" /></div>
+            <label class="check-row"><input asp-for="EnableAnimations" /> @L.Get("Enable Animations")</label>
+        </div>
+    </div>
+
+    <div class="actions sticky-actions">
+        <button class="btn btn-primary" type="submit">@L.Get("Save Appearance")</button>
+        <button class="btn btn-ghost" type="button" data-theme-reset>Reset local mode</button>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-color-for]').forEach(function (picker) {
+        const text = document.getElementById('' + picker.dataset.colorFor);
+        if (!text) return;
+        picker.value = /^#[0-9a-fA-F]{6}$/.test(text.value) ? text.value : '#000000';
+        picker.addEventListener('input', () => text.value = picker.value.toUpperCase());
+        text.addEventListener('input', () => {
+            if (/^#[0-9a-fA-F]{6}$/.test(text.value)) picker.value = text.value;
+        });
+    });
+});
+</script>
+}

@@ -1,0 +1,48 @@
+@model List<PageListDto>
+@inject AppLocalizer L
+@{
+    ViewData["Title"] = L.Get("Pages");
+}
+<div class="page-head">
+    <div>
+        <span class="eyebrow-admin">WEBSITE BUILDER</span>
+        <h2>@L.Get("Pages")</h2>
+        <p>@L.Get("Manage published pages and their section layouts.")</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">+ @L.Get("New Page")</a>
+</div>
+<div class="table-wrap">
+<table class="table">
+<thead><tr>
+    <th>@L.Get("Name")</th><th>@L.Get("Slug")</th><th>@L.Get("Sections")</th><th>@L.Get("Status")</th><th>@L.Get("Actions")</th>
+</tr></thead>
+<tbody>
+@if(!Model.Any())
+{
+    <tr><td colspan="5" class="empty">@L.Get("No pages yet.")</td></tr>
+}
+@foreach(var p in Model)
+{
+    <tr>
+        <td>
+            <strong>@p.NameEn</strong>
+            @if (!string.IsNullOrWhiteSpace(p.NameAr)) { <div class="content-ar-preview" dir="rtl">@p.NameAr</div> }
+            <div class="muted-line">@p.TitleEn</div>
+        </td>
+        <td dir="ltr">/@p.Slug</td>
+        <td>@p.SectionCount</td>
+        <td><span class="badge @(p.IsPublished?"badge-success":"badge-muted")">@(p.IsPublished?L.Get("Published"):L.Get("Draft"))</span></td>
+        <td>
+            <a class="btn btn-ghost" asp-action="Edit" asp-route-id="@p.Id">@L.Get("Edit")</a>
+            <a class="btn btn-ghost" asp-action="Sections" asp-route-pageId="@p.Id">@L.Get("Sections")</a>
+            <form asp-action="Delete" method="post" style="display:inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@p.Id"/>
+                <button class="btn btn-danger" type="submit">@L.Get("Delete")</button>
+            </form>
+        </td>
+    </tr>
+}
+</tbody>
+</table>
+</div>

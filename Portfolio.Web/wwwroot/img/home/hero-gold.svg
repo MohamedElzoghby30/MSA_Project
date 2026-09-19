@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#03111e"/><stop offset="1" stop-color="#0a2236"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2b4"/><stop offset=".28" stop-color="#e8bd54"/><stop offset=".65" stop-color="#bf7d18"/><stop offset="1" stop-color="#8b560e"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#f0cc67" stop-opacity=".6"/><stop offset="1" stop-color="#d6a84f" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="700" fill="url(#bg)"/>
+<circle cx="900" cy="180" r="290" fill="url(#glow)"/>
+<g opacity=".18" fill="#9eb0c0"><rect x="760" y="340" width="34" height="210"/><rect x="805" y="300" width="42" height="250"/><rect x="860" y="250" width="32" height="300"/><rect x="900" y="180" width="48" height="370"/><rect x="964" y="280" width="35" height="270"/><rect x="1008" y="330" width="60" height="220"/></g>
+<g transform="translate(705 280) rotate(-11)"><rect width="260" height="310" rx="16" fill="url(#gold)"/><rect x="18" y="18" width="224" height="274" rx="10" fill="none" stroke="#fff2b4" stroke-opacity=".55" stroke-width="4"/><text x="130" y="125" text-anchor="middle" font-family="Georgia,serif" font-size="52" fill="#6c4207">MSA</text><text x="130" y="175" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="26" fill="#6c4207">FINE GOLD</text><text x="130" y="218" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" fill="#6c4207">999.9</text><text x="130" y="260" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#6c4207">1000 g</text></g>
+<g fill="#d6a84f" opacity=".45"><circle cx="630" cy="500" r="4"/><circle cx="600" cy="535" r="3"/><circle cx="1110" cy="130" r="3"/><circle cx="1040" cy="170" r="4"/></g>
+</svg>

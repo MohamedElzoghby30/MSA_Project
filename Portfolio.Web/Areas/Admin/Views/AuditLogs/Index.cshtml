@@ -1,0 +1,111 @@
+@model List<AuditLogDto>
+@{
+    ViewData["Title"] = "Audit Logs";
+    var userName = ViewBag.UserName as string;
+    var action = ViewBag.Action as string;
+    var ipAddress = ViewBag.IpAddress as string;
+    var from = ViewBag.From as string;
+    var to = ViewBag.To as string;
+}
+
+<div class="page-head page-head-stacked-mobile">
+    <div>
+        <span class="eyebrow-admin">SECURITY & ACCOUNTABILITY</span>
+        <h2>Audit Logs</h2>
+        <p>Every Admin request is recorded with the actor, action, timestamp, status and IP address.</p>
+    </div>
+    <div class="audit-summary-pill">
+        <strong>@Model.Count</strong>
+        <span>records shown</span>
+    </div>
+</div>
+
+<div class="card audit-filter-card">
+    <form method="get" class="audit-filters">
+        <div class="form-group">
+            <label>User</label>
+            <input name="userName" value="@userName" class="input" placeholder="admin" />
+        </div>
+        <div class="form-group">
+            <label>Action / Controller</label>
+            <input name="action" value="@action" class="input" placeholder="Products / Create" />
+        </div>
+        <div class="form-group">
+            <label>IP Address</label>
+            <input name="ipAddress" value="@ipAddress" class="input" placeholder="192.168..." />
+        </div>
+        <div class="form-group">
+            <label>From</label>
+            <input name="from" value="@from" class="input" type="date" />
+        </div>
+        <div class="form-group">
+            <label>To</label>
+            <input name="to" value="@to" class="input" type="date" />
+        </div>
+        <div class="audit-filter-actions">
+            <button class="btn btn-primary" type="submit">Apply Filters</button>
+            <a class="btn btn-ghost" asp-action="Index">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card audit-table-card">
+    <div class="table-wrap">
+        <table class="table audit-table">
+            <thead>
+                <tr>
+                    <th>When</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Request</th>
+                    <th>IP</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="empty">No audit records match the current filters.</td></tr>
+                }
+                else
+                {
+                    foreach (var log in Model)
+                    {
+                        var statusClass = log.StatusCode >= 500 ? "audit-fail" : log.StatusCode >= 400 ? "audit-warn" : "audit-ok";
+                        <tr>
+                            <td>
+                                <strong>@log.OccurredAtUtc.ToLocalTime().ToString("yyyy-MM-dd")</strong>
+                                <small>@log.OccurredAtUtc.ToLocalTime().ToString("HH:mm:ss")</small>
+                            </td>
+                            <td>
+                                <strong>@log.UserName</strong>
+                                <small>@(log.UserId?.ToString() ?? "Anonymous")</small>
+                            </td>
+                            <td>
+                                <span class="badge badge-gold">@log.ActionType</span>
+                                <strong class="audit-action-name">@log.Controller/@log.Action</strong>
+                            </td>
+                            <td>
+                                <span class="badge badge-muted">@log.HttpMethod</span>
+                                <small>@log.Path</small>
+                            </td>
+                            <td class="audit-mono">@(log.IpAddress ?? "Unknown")</td>
+                            <td><span class="audit-status @statusClass">@log.StatusCode</span></td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(log.EntityId))
+                                {
+                                    <span class="audit-mono">ID: @log.EntityId</span>
+                                }
+                                else
+                                {
+                                    <span class="muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

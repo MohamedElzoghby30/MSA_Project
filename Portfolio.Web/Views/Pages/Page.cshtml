@@ -1,0 +1,228 @@
+@model PublicPageViewModel
+@inject AppLocalizer L
+@{
+    var ar = L.IsArabic;
+    var pageTitle = ar ? (Model.Page.TitleAr ?? Model.Page.TitleEn ?? Model.Page.Title ?? Model.Page.NameAr ?? Model.Page.NameEn ?? Model.Page.Name)
+                       : (Model.Page.TitleEn ?? Model.Page.Title ?? Model.Page.NameEn ?? Model.Page.Name);
+    var pageMetaTitle = ar ? (Model.Page.MetaTitleAr ?? Model.Page.MetaTitleEn ?? Model.Page.MetaTitle)
+                           : (Model.Page.MetaTitleEn ?? Model.Page.MetaTitle);
+    var pageMetaDescription = ar ? (Model.Page.MetaDescriptionAr ?? Model.Page.MetaDescriptionEn ?? Model.Page.MetaDescription)
+                                  : (Model.Page.MetaDescriptionEn ?? Model.Page.MetaDescription);
+    ViewData["Title"] = pageMetaTitle ?? pageTitle;
+    ViewData["MetaDescription"] = pageMetaDescription ?? Model.Settings.GetValueOrDefault("WebsiteDescription", "Wholesale precious metals trading from Dubai.");
+    var whatsapp = Model.Company.Phones.FirstOrDefault(x => x.IsWhatsApp && x.IsActive)?.PhoneNumber;
+    var email = Model.Company.Email;
+}
+
+<div class="page-shell">
+    @foreach (var s in Model.Sections.Where(x => x.IsVisible).OrderBy(x => x.SortOrder))
+    {
+        var type = (s.SectionType ?? "Text").Trim().ToLowerInvariant();
+        var sectionTitle = ar ? (s.TitleAr ?? s.TitleEn ?? s.Title) : (s.TitleEn ?? s.Title);
+        var sectionSubtitle = ar ? (s.SubtitleAr ?? s.SubtitleEn ?? s.Subtitle) : (s.SubtitleEn ?? s.Subtitle);
+        var sectionDescription = ar ? (s.DescriptionAr ?? s.DescriptionEn ?? s.Description) : (s.DescriptionEn ?? s.Description);
+        var animation = string.IsNullOrWhiteSpace(s.Animation) ? "fade-up" : s.Animation;
+        var sectionStyle = string.Join("", new[]
+        {
+            string.IsNullOrWhiteSpace(s.BackgroundColor) ? "" : $"background-color:{s.BackgroundColor};",
+            string.IsNullOrWhiteSpace(s.TextColor) ? "" : $"color:{s.TextColor};",
+            string.IsNullOrWhiteSpace(s.BackgroundImage) ? "" : $"--section-bg:url('{s.BackgroundImage}');"
+        });
+
+        <section class="public-section section-@type @(type == "products" ? "products-showcase" : "") reveal @animation" data-delay="@(s.AnimationDelay ?? 0)" data-duration="@(s.AnimationDuration ?? 700)" style="@sectionStyle">
+            <div class="site-container">
+                @if (type == "hero")
+                {
+                    <div class="hero-grid">
+                        <div class="hero-copy">
+                            <span class="eyebrow">@(sectionSubtitle ?? L.Get("MSA GOLD & JEWELLERY TRADING L.L.C"))</span>
+                            <h1>@sectionTitle</h1>
+                            <p>@sectionDescription</p>
+                            <div class="hero-actions">
+                                <a class="gold-btn" href="/contact">@L.Get("Get a Quote") <span>→</span></a>
+                                <a class="outline-btn" href="/products">@L.Get("Explore Products")</a>
+                            </div>
+                            <div class="hero-highlights">
+                                <div><img src="~/img/icons/diamond.svg" alt="" /><span>@L.Get("999.9 Fine Gold")</span></div>
+                                <div><img src="~/img/icons/shield.svg" alt="" /><span>@L.Get("Trusted & Transparent")</span></div>
+                                <div><img src="~/img/icons/location.svg" alt="" /><span>@L.Get("Deira Gold Souq")</span></div>
+                                <div><img src="~/img/icons/gold.svg" alt="" onerror="this.style.display='none'" /><span>@L.Get("Worldwide Supply")</span></div>
+                            </div>
+                        </div>
+                        <div class="hero-visual">
+                            <div class="hero-glow"></div>
+                            <img src="@(s.Image ?? "/img/home/hero-gold.svg")" alt="@L.Get("Gold bullion")" loading="eager" onerror="this.style.display='none';this.parentElement.classList.add('media-missing')" />
+                            <div class="hero-stamp"><strong>2025</strong><span>Established in Dubai</span></div>
+                        </div>
+                    </div>
+                }
+                else if (type == "truststrip")
+                {
+                    <div class="trust-strip reveal fade-up">
+                        <div><img src="~/img/icons/diamond.svg" alt="" /><strong>@L.Get("999.9 Fine Gold")</strong><span>@L.Get("Investment-grade purity")</span></div>
+                        <div><img src="~/img/icons/shield.svg" alt="" /><strong>@L.Get("Trusted & Transparent")</strong><span>@L.Get("Clear wholesale execution")</span></div>
+                        <div><img src="~/img/icons/location.svg" alt="" /><strong>@L.Get("Direct from Deira")</strong><span>@L.Get("Dubai Gold Souq office")</span></div>
+                        <div><img src="~/img/icons/trade.svg" alt="" /><strong>@L.Get("Global Supply")</strong><span>@L.Get("Wholesale distribution")</span></div>
+                    </div>
+                }
+                else if (type == "products")
+                {
+                    <div class="section-heading reveal fade-up">
+                        <div><span class="eyebrow">@(sectionSubtitle ?? L.Get("Premium bullion"))</span><h2>@sectionTitle</h2></div>
+                        @if (!string.IsNullOrWhiteSpace(s.Description))
+                        {
+                            <p>@sectionDescription</p>
+                        }
+                    </div>
+                    <div class="product-grid">
+                        @foreach (var p in Model.Products.Where(x => x.IsActive).OrderBy(x => x.Name))
+                        {
+                            <article class="lux-card product-card reveal zoom-in">
+                                <div class="card-media"><img src="@(p.MainImage ?? "/img/products/fine-gold.svg")" alt="@p.Name" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('media-missing')" /><span class="media-shine"></span></div>
+                                <div class="card-content"><span class="card-kicker">@L.Get("BULLION")</span><h3>@p.Name</h3><p>@p.Description</p><a href="/contact" class="card-link">@L.Get("Request availability") <span>→</span></a></div>
+                            </article>
+                        }
+                    </div>
+                }
+                else if (type == "about")
+                {
+                    <div class="about-split">
+                        <div class="about-media reveal fade-left"><img src="@(s.Image ?? "/img/home/gold-souq.svg")" alt="@L.Get("Deira Gold Souq")" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('media-missing')" /><span class="corner-label">DUBAI · DEIRA</span></div>
+                        <div class="about-copy reveal fade-right">
+                            <span class="eyebrow">@(sectionSubtitle ?? L.Get("About MSA"))</span>
+                            <h2>@sectionTitle</h2>
+                            <p>@sectionDescription</p>
+                            <div class="about-facts">
+                                @foreach (var stat in s.Stats)
+                                {
+                                    var value = ar
+                                    ? (stat.ValueAr ?? stat.ValueEn)
+                                    : (stat.ValueEn ?? stat.ValueAr);
+
+                                    var label = ar
+                                    ? (stat.LabelAr ?? stat.LabelEn)
+                                    : (stat.LabelEn ?? stat.LabelAr);
+
+                                    <div>
+                                        @if (!string.IsNullOrWhiteSpace(stat.Icon))
+                                        {
+                                            <img class="about-fact-icon"
+                                                 src="@stat.Icon"
+                                                 alt="" />
+                                        }
+
+                                        <strong>@value</strong>
+                                        <span>@label</span>
+                                    </div>
+                                }
+                            </div>
+                            <a class="gold-btn" href="/about">@L.Get("Learn More About MSA") <span>→</span></a>
+                        </div>
+                    </div>
+                }
+                else if (type == "services")
+                {
+                    <div class="section-heading reveal fade-up"><div><span class="eyebrow">@(sectionSubtitle ?? L.Get("Specialist capabilities"))</span><h2>@sectionTitle</h2></div><p>@sectionDescription</p></div>
+                    <div class="service-grid">
+                        @foreach (var item in Model.Services.Where(x => x.IsActive).OrderBy(x => x.SortOrder))
+                        {
+                            <article class="service-card reveal fade-up">
+                                <div class="service-media"><img src="@(item.Image ?? "/img/services/refining.svg")" alt="@item.Title" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('media-missing')" /></div>
+                                <div class="service-content"><div class="service-icon-wrap"><span class="service-icon-text">✦</span></div><span class="card-kicker">@L.Get("MSA SERVICE")</span><h3>@item.Title</h3><p>@item.Description</p><a class="card-link" href="/contact">@L.Get("Talk to our team") <span>→</span></a></div>
+                            </article>
+                        }
+                    </div>
+                }
+                else if (type == "stats")
+                {
+                    <div class="stats-panel reveal scale">
+                        <div class="stats-heading"><span class="eyebrow">@(sectionSubtitle ?? L.Get("Our foundations"))</span><h2>@sectionTitle</h2><p>@sectionDescription</p></div>
+                        <div class="stats-grid-public">
+                            <div><strong data-count="2025">2025</strong><span>@L.Get("Established")</span></div>
+                            <div><strong>Dubai</strong><span>@L.Get("UAE · Gold Souq")</span></div>
+                            <div><strong>999.9</strong><span>@L.Get("Fine Gold Purity")</span></div>
+                            <div><strong>Global</strong><span>@L.Get("Wholesale Distribution")</span></div>
+                        </div>
+                    </div>
+                }
+                else if (type == "cta")
+                {
+                    <div class="cta-panel reveal fade-up">
+                        <div><span class="eyebrow">@(sectionSubtitle ?? L.Get("Let's talk precious metals"))</span><h2>@sectionTitle</h2><p>@sectionDescription</p></div>
+                        <div class="cta-actions"><a class="gold-btn" href="/contact">@L.Get("Get a Quote") <span>→</span></a><a class="outline-btn" href="tel:@(Model.Company.Phones.FirstOrDefault(x => x.IsActive)?.PhoneNumber)">@L.Get("Call Us")</a></div>
+                    </div>
+                }
+                else if (type == "contact")
+                {
+                    <div class="contact-layout" id="contact">
+                        <div class="contact-intro reveal fade-left">
+                            <span class="eyebrow">@(sectionSubtitle ?? L.Get("Talk to MSA"))</span>
+                            <h2>@sectionTitle</h2>
+                            <p>@sectionDescription</p>
+                            <div class="contact-list">
+                                <div><span class="contact-icon"><img src="~/img/icons/location.svg" alt="" /></span><div><small>@L.Get("Office Address")</small><strong>@Model.Company.Address</strong></div></div>
+                                @foreach (var phoneItem in Model.Company.Phones.Where(x => x.IsActive).OrderBy(x => x.SortOrder))
+                                {
+                                    <div><span class="contact-icon"><img src="@(phoneItem.IsWhatsApp ? "/img/icons/whatsapp.svg" : "/img/icons/phone.svg")" alt="" /></span><div><small>@L.Get(phoneItem.Label ?? "Phone")</small><a href="@(phoneItem.IsWhatsApp ? "https://wa.me/" + new string(phoneItem.PhoneNumber.Where(char.IsDigit).ToArray()) : "tel:" + phoneItem.PhoneNumber)" target="@(phoneItem.IsWhatsApp ? "_blank" : null)">@phoneItem.PhoneNumber</a></div></div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(email))
+                                {
+                                    <div><span class="contact-icon"><img src="~/img/icons/mail.svg" alt="" /></span><div><small>@L.Get("Email")</small><a href="mailto:@email">@email</a></div></div>
+                                }
+                                <div><span class="contact-icon"><img src="~/img/icons/clock.svg" alt="" /></span><div><small>@L.Get("Working Hours")</small><strong>@Model.Company.WorkingHours</strong></div></div>
+                            </div>
+                        </div>
+                        <div class="contact-form-wrap reveal fade-right">
+                            <form class="contact-form" asp-controller="Contact" asp-action="Send" method="post">
+                                @Html.AntiForgeryToken()
+                                <div class="form-two"><div><label>@L.Get("Your Name") <b>*</b></label><input class="public-input" name="Name" placeholder="@L.Get("Enter your full name")" required /></div><div><label>@L.Get("Your Email") <b>*</b></label><input class="public-input" name="Email" type="email" placeholder="@L.Get("Enter your email")" required /></div></div>
+                                <div class="form-two"><div><label>@L.Get("Phone Number")</label><input class="public-input" name="Phone" placeholder="+971 5x xxx xxxx" /></div><div><label>@L.Get("Country")</label><input class="public-input" name="Country" placeholder="@L.Get("United Arab Emirates")" /></div></div>
+                                <div class="form-group-public"><label>@L.Get("Message Type") <b>*</b></label><div class="custom-select" data-custom-select><input type="hidden" name="MessageType" value="General Inquiry" /><button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false"><span>General Inquiry</span><span>⌄</span></button><div class="custom-select-menu" role="listbox"><button type="button" data-value="General Inquiry">General Inquiry</button><button type="button" data-value="Price Request">Price Request</button><button type="button" data-value="Partnership">Partnership</button><button type="button" data-value="Complaint">Complaint</button><button type="button" data-value="Support">Support</button><button type="button" data-value="Other">Other</button></div></div></div>
+                                <div class="form-group-public"><label>@L.Get("Subject")</label><input class="public-input" name="Subject" placeholder="@L.Get("How can we help?")" /></div>
+                                <div class="form-group-public"><label>@L.Get("Your Message") <b>*</b></label><textarea class="public-input" name="Message" placeholder="@L.Get("Tell us about your inquiry...")" required></textarea></div>
+                                <button class="gold-btn form-submit" type="submit">@L.Get("Send Message") <span>→</span></button>
+                                @if (TempData["ContactSuccess"] is string ok)
+                                {
+                                    <div class="form-ok">@ok</div>
+                                }
+                                @if (TempData["ContactError"] is string err)
+                                {
+                                    <div class="form-error">@err</div>
+                                }
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="generic-builder-section reveal fade-up">
+                        @if (!string.IsNullOrWhiteSpace(s.Image))
+                        {
+                            <div class="generic-media"><img src="@s.Image" alt="@sectionTitle" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('media-missing')" /></div>
+                        }
+                        <div class="generic-copy">
+                            <span class="eyebrow">@L.Get(s.SectionType)</span>
+                            @if (!string.IsNullOrWhiteSpace(sectionTitle))
+                            {
+                                <h2>@sectionTitle</h2>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(sectionSubtitle))
+                            {
+                                <p class="generic-subtitle">@sectionSubtitle</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(sectionDescription))
+                            {
+                                <div class="generic-description">@sectionDescription</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    @if (!Model.Sections.Any())
+    {
+        <section class="public-section"><div class="site-container"><div class="empty-public"><span class="eyebrow">MSA GOLD</span><h1>@pageTitle</h1><p>@L.Get("Content is ready to be built from the admin page builder.")</p></div></div></section>
+    }
+</div>

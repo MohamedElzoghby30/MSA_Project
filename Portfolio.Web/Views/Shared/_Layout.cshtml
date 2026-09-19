@@ -1,0 +1,457 @@
+@inject Portfolio.Business.Interfaces.ICompanyService CompanyService
+@inject Portfolio.Business.Interfaces.IThemeService ThemeService
+@inject Portfolio.Business.Interfaces.IWebsiteSettingService SettingsService
+@inject Portfolio.Business.Interfaces.IPageService PageService
+@inject AppLocalizer L
+
+@{
+    var company = await CompanyService.GetAsync();
+    var theme = await ThemeService.GetAsync();
+    var settings = await SettingsService.GetAllAsync();
+    var publicPages = await PageService.ListAsync();
+
+    static bool SettingEnabled(
+        Dictionary<string, string> values,
+        string key,
+        bool fallback = true)
+        => !values.TryGetValue(key, out var raw)
+           || !bool.TryParse(raw, out var parsed)
+            ? fallback
+            : parsed;
+
+    var localizationEnabled =
+        SettingEnabled(settings, "PublicLocalizationEnabled", true);
+
+    var darkModeEnabled =
+        SettingEnabled(settings, "PublicDarkModeEnabled", true);
+
+    var siteName =
+        company?.Name
+        ?? settings.GetValueOrDefault(
+            "WebsiteTitle",
+            "MSA GOLD & JEWELLERY TRADING L.L.C");
+
+    var title =
+        ViewData["Title"]?.ToString()
+        ?? siteName;
+
+    var metaDescription =
+        ViewData["MetaDescription"]?.ToString()
+        ?? settings.GetValueOrDefault(
+            "WebsiteDescription",
+            "Wholesale precious metals trading, bullion supply, refining and settlement from Deira Gold Souq, Dubai.");
+
+    var domain =
+        settings.GetValueOrDefault(
+            "Domain",
+            "www.msagold.ae");
+
+    var phone =
+        company?.Phones?
+            .FirstOrDefault(x => x.IsActive)
+            ?.PhoneNumber;
+
+    var whatsapp =
+        company?.Phones?
+            .FirstOrDefault(x => x.IsActive && x.IsWhatsApp)
+            ?.PhoneNumber;
+
+    var nextCulture =
+        L.LanguageCode == "ar"
+            ? "en"
+            : "ar";
+
+    var languageLabel =
+        L.LanguageCode == "ar"
+            ? "EN"
+            : "AR";
+
+    var currentUrl =
+        Context.Request.PathBase
+        + Context.Request.Path
+        + Context.Request.QueryString;
+
+    var effectiveThemeMode =
+        darkModeEnabled
+            ? theme.ThemeMode
+            : "light";
+
+    var isArabic = L.LanguageCode == "ar";
+
+    var themeLabel =
+        effectiveThemeMode == "dark"
+            ? (isArabic ? "داكن" : "DARK")
+            : (isArabic ? "فاتح" : "LIGHT");
+
+    var themeIcon =
+        effectiveThemeMode == "dark"
+            ? "☾"
+            : "☀";
+
+    var whatsappDigits =
+        !string.IsNullOrWhiteSpace(whatsapp)
+            ? new string(whatsapp.Where(char.IsDigit).ToArray())
+            : "";
+}
+
+<!doctype html>
+<html lang="@L.LanguageCode" dir="@L.Direction">
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1" />
+
+    <meta name="color-scheme"
+          content="@(darkModeEnabled ? "light dark" : "light")" />
+
+    <title>
+        @L.Get(title)@(title == siteName ? "" : " · " + L.Get(siteName))
+    </title>
+
+    <meta name="description"
+          content="@metaDescription" />
+
+    <meta name="robots"
+          content="index,follow" />
+
+    <link rel="icon"
+          href="@(company?.Favicon ?? "/img/brand/msa-mark.svg")" />
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+</head>
+
+<body data-theme-mode="@effectiveThemeMode"
+      data-theme="@(effectiveThemeMode is "light" or "dark" ? effectiveThemeMode : "")"
+      data-dark-mode-enabled="@(darkModeEnabled ? "true" : "false")"
+      data-localization-enabled="@(localizationEnabled ? "true" : "false")"
+      style="--primary:@theme.PrimaryColor;--secondary:@theme.SecondaryColor;--accent:@theme.AccentColor;--gold:@theme.AccentColor;--gold2:@theme.PrimaryColor;--gold3:@theme.AccentColor;--body:@theme.BodyColor;--heading:@theme.HeadingColor;--light-bg:@theme.LightBackground;--light-surface:@theme.LightSurface;--light-surface-alt:@theme.LightSurfaceAlt;--light-text:@theme.LightText;--light-muted:@theme.LightMutedText;--light-border:@theme.LightBorder;--light-header:@theme.LightHeader;--light-footer:@theme.LightFooter;--light-input:@theme.LightInput;--light-shadow:@theme.LightShadow;--dark-bg:@theme.DarkBackground;--dark-surface:@theme.DarkSurface;--dark-surface-alt:@theme.DarkSurfaceAlt;--dark-text:@theme.DarkText;--dark-muted:@theme.DarkMutedText;--dark-border:@theme.DarkBorder;--dark-header:@theme.DarkHeader;--dark-footer:@theme.DarkFooter;--dark-input:@theme.DarkInput;--dark-shadow:@theme.DarkShadow;--animations:@(theme.EnableAnimations ? "1" : "0");--radius:@(theme.BorderRadius)px;--button-radius:@(theme.ButtonRadius)px;--container:@(theme.ContainerWidth)px;">
+
+    <header class="site-header">
+
+        <!-- =================================================
+             PREMIUM UTILITY BAR
+             ================================================= -->
+
+        <div class="market-strip">
+            <div class="site-container market-inner">
+
+                <div class="market-brand">
+                    <span class="market-company">
+                        MSA GOLD 
+                    </span>
+
+                    <span class="market-divider"></span>
+
+                    <span class="market-location">
+                        DEIRA GOLD SOUQ · DUBAI, UAE
+                    </span>
+                </div>
+
+                <div class="market-actions">
+
+                    @if (localizationEnabled)
+                    {
+                        <a href="/Language/Set?culture=@nextCulture&returnUrl=@Uri.EscapeDataString(currentUrl)"
+                           class="language-switch"
+                           title="@L.Get("Language")"
+                           aria-label="@L.Get("Language")">
+
+                            <span class="language-icon">
+                                @(isArabic ? "EN" : "AR")
+                            </span>
+
+                            <span class="language-label">
+                                @(isArabic ? "English" : "العربية")
+                            </span>
+
+                            <span class="language-arrow">
+                                ↗
+                            </span>
+                        </a>
+                    }
+
+                    @if (darkModeEnabled)
+                    {
+                        <button class="site-theme-toggle theme-toggle-pill"
+                                data-theme-toggle
+                                type="button"
+                                title="@L.Get("Toggle light / night mode")"
+                                aria-label="@L.Get("Toggle light / night mode")">
+
+                            <span class="theme-icon">
+                                @themeIcon
+                            </span>
+
+                            <span class="theme-toggle-track"
+                                  aria-hidden="true">
+                                <span class="theme-toggle-thumb"></span>
+                            </span>
+
+                            <span class="theme-toggle-text">
+                                @themeLabel
+                            </span>
+                        </button>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(phone))
+                    {
+                        <a class="market-contact phone-link"
+                           href="tel:@phone"
+                           dir="ltr">
+                            <span class="contact-mini-icon">☎</span>
+                            <span>@phone</span>
+                        </a>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(whatsapp))
+                    {
+                        <a class="market-contact whatsapp-link"
+                           href="https://wa.me/@whatsappDigits"
+                           target="_blank"
+                           rel="noopener"
+                           dir="ltr">
+                            <span>WhatsApp</span>
+                        </a>
+                    }
+
+                   
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================
+             MAIN NAVIGATION
+             ================================================= -->
+
+        <div class="nav-bar">
+            <div class="site-container nav-wrap">
+
+                <a class="brand brand-wide"
+                   href="/"
+                   aria-label="MSA Gold home">
+
+                    <img src="@(company?.Logo ?? "/img/brand/msa-logo.svg")"
+                         alt="MSA Gold & Jewellery Trading L.L.C" />
+                </a>
+
+                <button class="mobile-menu-btn"
+                        id="mobileMenuBtn"
+                        type="button"
+                        aria-label="Open navigation"
+                        aria-expanded="false">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <nav class="main-nav"
+                     id="mainNav"
+                     aria-label="Main navigation">
+
+                    <a href="/">
+                        @L.Get("Home")
+                    </a>
+
+                    @{
+                        var navPages = publicPages
+                            .Where(x =>
+                                x.IsPublished &&
+                                !string.IsNullOrWhiteSpace(x.Slug))
+                            .OrderBy(x => x.SortOrder)
+                            .ThenBy(x => x.NameEn ?? x.Name)
+                            .ToList();
+                    }
+
+                    @foreach (var p in navPages)
+                    {
+                        var navLabel =
+                            L.LanguageCode == "ar"
+                                ? (p.NameAr ?? p.NameEn ?? p.Name)
+                                : (p.NameEn ?? p.Name);
+
+                        <a href="/@p.Slug">
+                            @navLabel
+                        </a>
+                    }
+
+                    <a href="/contact"
+                       class="nav-cta">
+
+                        @L.Get("Get a Quote")
+
+                        <span>↗</span>
+                    </a>
+
+                </nav>
+            </div>
+        </div>
+
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+
+        <div class="site-container footer-top">
+
+            <div class="footer-brand-block">
+
+                <img src="@(company?.Logo ?? "/img/brand/msa-logo.svg")"
+                     alt="MSA Gold"
+                     class="footer-logo" />
+
+                <p>
+                    @company?.Description
+                </p>
+
+                <div class="footer-socials">
+
+                    @foreach (
+                        var link in company?.SocialLinks?
+                            .Where(x => x.IsActive)
+                            .OrderBy(x => x.SortOrder)
+                        ?? Enumerable.Empty<Portfolio.Business.DTOs.SocialLinkDto>())
+                    {
+                        <a href="@link.Url"
+                           target="_blank"
+                           rel="noopener"
+                           title="@link.Platform"
+                           class="social-link">
+
+                            <partial name="_SocialIcon"
+                                     model="@(link.Icon ?? link.Platform)" />
+
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+            <div>
+                <span class="footer-kicker">
+                    @L.Get("NAVIGATION")
+                </span>
+
+                <a href="/">
+                    @L.Get("Home")
+                </a>
+
+                @foreach (
+                    var p in publicPages
+                        .Where(x =>
+                            x.IsPublished &&
+                            !string.IsNullOrWhiteSpace(x.Slug))
+                        .OrderBy(x => x.SortOrder)
+                        .ThenBy(x => x.NameEn ?? x.Name))
+                {
+                    var footerLabel =
+                        L.LanguageCode == "ar"
+                            ? (p.NameAr ?? p.NameEn ?? p.Name)
+                            : (p.NameEn ?? p.Name);
+
+                    <a href="/@p.Slug">
+                        @footerLabel
+                    </a>
+                }
+
+                <a href="/contact">
+                    @L.Get("Contact Us")
+                </a>
+            </div>
+
+            <div>
+
+                <span class="footer-kicker">
+                    @L.Get("CONTACT")
+                </span>
+
+                @if (!string.IsNullOrWhiteSpace(company?.Email))
+                {
+                    <a href="mailto:@company.Email">
+                        @company.Email
+                    </a>
+                }
+
+                @foreach (
+                    var item in company?.Phones?
+                        .Where(x => x.IsActive)
+                        .OrderBy(x => x.SortOrder)
+                    ?? Enumerable.Empty<Portfolio.Business.DTOs.CompanyPhoneDto>())
+                {
+                    <a href="@(item.IsWhatsApp
+                        ? "https://wa.me/" + new string(item.PhoneNumber.Where(char.IsDigit).ToArray())
+                        : "tel:" + item.PhoneNumber)"
+                       target="@(item.IsWhatsApp ? "_blank" : null)">
+
+                        @item.Label · @item.PhoneNumber
+                    </a>
+                }
+
+                <span class="footer-copy">
+                    @company?.Address
+                </span>
+
+            </div>
+
+            <div>
+
+                <span class="footer-kicker">
+                    @L.Get("WORKING HOURS")
+                </span>
+
+                <span class="footer-copy">
+                    @company?.WorkingHours
+                </span>
+
+                <span class="footer-copy">
+                    @L.Get("Established 2025 · Dubai, UAE")
+                </span>
+
+               
+
+            </div>
+
+        </div>
+
+        <div class="site-container footer-bottom">
+
+            <span>
+                © @DateTime.UtcNow.Year Engix Solutions.
+                @L.Get("All rights reserved.")
+            </span>
+
+            <span>
+                @L.Get("Precision · Transparency · Reliability")
+            </span>
+
+        </div>
+
+    </footer>
+
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
+    <script src="~/js/ui-preferences.js"
+            asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

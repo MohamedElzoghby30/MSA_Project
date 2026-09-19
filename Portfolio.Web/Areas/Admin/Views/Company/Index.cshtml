@@ -1,0 +1,102 @@
+@model CompanyDto
+@{
+    ViewData["Title"] = "Company";
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow-admin">BUSINESS PROFILE</span>
+        <h2>Company Profile</h2>
+        <p>Manage MSA's identity, office details, phone numbers and communication channels.</p>
+    </div>
+</div>
+
+@if (Model is null)
+{
+    <div class="card empty">Company profile is not available yet. Run the seed or create the record first.</div>
+}
+else
+{
+    <form asp-action="Save" method="post" enctype="multipart/form-data" class="card">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+        <input asp-for="Id" type="hidden" />
+
+        <div class="form-section-title"><span>01</span><div><strong>Identity & Contact</strong><small>Core company information shown across the website.</small></div></div>
+        <div class="form-grid">
+            <div class="form-group"><label asp-for="Name">Company Name</label><input asp-for="Name" class="input" required /></div>
+            <div class="form-group"><label asp-for="Email">Email Address</label><input asp-for="Email" class="input" type="email" /></div>
+            <div class="form-group full"><label asp-for="Description">Company Overview</label><textarea asp-for="Description" class="textarea"></textarea></div>
+            <div class="form-group full"><label asp-for="Address">Office Address</label><input asp-for="Address" class="input" /></div>
+            <div class="form-group"><label asp-for="WorkingHours">Working Hours</label><input asp-for="WorkingHours" class="input" /></div>
+            
+        </div>
+
+        <div class="form-section-title"><span>02</span><div><strong>Brand Assets</strong><small>Logo and favicon used on the public website.</small></div></div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Logo</label>
+                <input name="LogoFile" class="input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+                @if (!string.IsNullOrWhiteSpace(Model.Logo)) { <div class="upload-preview"><img src="@Model.Logo" alt="Company logo" /></div> }
+            </div>
+            <div class="form-group">
+                <label>Favicon</label>
+                <input name="FaviconFile" class="input" type="file" accept="image/png,image/x-icon,image/svg+xml" />
+                @if (!string.IsNullOrWhiteSpace(Model.Favicon)) { <div class="upload-preview"><img src="@Model.Favicon" alt="Company favicon" /></div> }
+            </div>
+        </div>
+
+        <div class="actions"><button type="submit" class="btn btn-primary">Save Company Profile</button></div>
+    </form>
+
+    <div class="card management-card">
+        <div class="page-head compact-head"><div><span class="eyebrow-admin">COMMUNICATION</span><h3>Phone Numbers</h3><p>Add direct lines and WhatsApp-enabled numbers.</p></div></div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Label</th><th>Phone</th><th>WhatsApp</th><th>Active</th><th>Order</th><th></th></tr></thead>
+                <tbody>
+                @if (!Model.Phones.Any()) { <tr><td colspan="6" class="empty">No phone numbers added yet.</td></tr> }
+                @foreach (var p in Model.Phones.OrderBy(x => x.SortOrder))
+                {
+                    <tr><td>@p.Label</td><td>@p.PhoneNumber</td><td><span class="badge @(p.IsWhatsApp ? "badge-success" : "badge-muted")">@(p.IsWhatsApp ? "WhatsApp" : "Phone")</span></td><td><span class="badge @(p.IsActive ? "badge-success" : "badge-muted")">@(p.IsActive ? "Active" : "Hidden")</span></td><td>@p.SortOrder</td><td><form asp-action="DeletePhone" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@p.Id" /><button class="btn btn-danger" type="submit">Delete</button></form></td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <form asp-action="SavePhone" method="post" class="form-grid form-grid-spaced">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="companyId" value="@Model.Id" />
+            <div class="form-group"><label>Label</label><input name="Label" class="input" placeholder="Mobile / WhatsApp" /></div>
+            <div class="form-group"><label>Phone Number</label><input name="PhoneNumber" class="input" placeholder="+971 56 418 4546" required /></div>
+            <div class="form-group"><label>Sort Order</label><input name="SortOrder" class="input" type="number" value="0" /></div>
+            <div class="check-grid"><label class="check-row"><input name="IsWhatsApp" type="checkbox" value="true" /> WhatsApp</label><label class="check-row"><input name="IsActive" type="checkbox" value="true" checked /> Active</label></div>
+            <div class="actions full"><button type="submit" class="btn btn-primary">Add Phone</button></div>
+        </form>
+    </div>
+
+    <div class="card management-card">
+        <div class="page-head compact-head"><div><span class="eyebrow-admin">SOCIAL PRESENCE</span><h3>Social Links</h3><p>Manage social profiles and communication channels displayed on the website.</p></div></div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Platform</th><th>URL</th><th>Active</th><th>Order</th><th></th></tr></thead>
+                <tbody>
+                @if (!Model.SocialLinks.Any()) { <tr><td colspan="5" class="empty">No social links added yet.</td></tr> }
+                @foreach (var s in Model.SocialLinks.OrderBy(x => x.SortOrder))
+                {
+                    <tr><td><span class="inline-brand"><partial name="~/Views/Shared/_SocialIcon.cshtml" model="@(s.Icon ?? s.Platform)" />@s.Platform</span></td><td>@s.Url</td><td><span class="badge @(s.IsActive ? "badge-success" : "badge-muted")">@(s.IsActive ? "Active" : "Hidden")</span></td><td>@s.SortOrder</td><td><form asp-action="DeleteSocial" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@s.Id" /><button class="btn btn-danger" type="submit">Delete</button></form></td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <form asp-action="SaveSocial" method="post" class="form-grid form-grid-spaced">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="companyId" value="@Model.Id" />
+            <div class="form-group"><label>Platform</label><input name="Platform" class="input" placeholder="Instagram" required /></div>
+            <div class="form-group"><label>Profile URL</label><input name="Url" class="input" type="url" placeholder="https://instagram.com/your-profile" required /></div>
+            <div class="form-group"><label>Icon Key</label><input name="Icon" class="input" placeholder="instagram" /></div>
+            <div class="form-group"><label>Sort Order</label><input name="SortOrder" class="input" type="number" value="0" /></div>
+            <label class="check-row"><input name="IsActive" type="checkbox" value="true" checked /> Active</label>
+            <div class="actions full"><button type="submit" class="btn btn-primary">Add Social Link</button></div>
+        </form>
+    </div>
+}

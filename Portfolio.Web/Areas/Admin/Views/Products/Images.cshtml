@@ -1,0 +1,34 @@
+@model ProductImagesDto
+@{
+    ViewData["Title"] = "Product Images";
+}
+<div class="page-head">
+    <div><span class="eyebrow-admin">PRODUCT GALLERY</span><h2>@Model.ProductName</h2><p>Upload, choose the main image and remove unused images.</p></div>
+    <a class="btn btn-ghost" asp-action="Edit" asp-route-id="@Model.ProductId">Back to Product</a>
+</div>
+<div class="card">
+    <form asp-action="UploadImage" method="post" enctype="multipart/form-data" class="upload-zone">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.ProductId" />
+        <label class="upload-box"><span class="upload-icon">＋</span><strong>Drop an image here or browse</strong><small>JPG, PNG, WEBP or GIF · Max 5 MB</small><input class="file-input" type="file" name="file" accept="image/jpeg,image/png,image/webp,image/gif" required /></label>
+        <button class="btn btn-primary" type="submit">Upload Image</button>
+    </form>
+</div>
+<div class="card management-card">
+    <div class="gallery-grid">
+        @if (!Model.Images.Any())
+        {
+            <div class="empty">No product images have been uploaded yet.</div>
+        }
+        @foreach (var image in Model.Images.OrderBy(x => x.SortOrder))
+        {
+            <article class="gallery-card @(image.IsMain ? "is-main" : "")">
+                <div class="gallery-media"><img src="@image.ImagePath" alt="@Model.ProductName" loading="lazy" />@if (image.IsMain) { <span class="main-chip">MAIN IMAGE</span> }</div>
+                <div class="gallery-footer"><span>Order @image.SortOrder</span><div>
+                    @if (!image.IsMain) { <form asp-action="SetMainImage" method="post" style="display:inline">@Html.AntiForgeryToken()<input type="hidden" name="imageId" value="@image.Id" /><input type="hidden" name="productId" value="@Model.ProductId" /><button class="btn btn-ghost" type="submit">Set Main</button></form> }
+                    <form asp-action="DeleteImage" method="post" style="display:inline">@Html.AntiForgeryToken()<input type="hidden" name="imageId" value="@image.Id" /><input type="hidden" name="productId" value="@Model.ProductId" /><button class="btn btn-danger" type="submit">Delete</button></form>
+                </div></div>
+            </article>
+        }
+    </div>
+</div>

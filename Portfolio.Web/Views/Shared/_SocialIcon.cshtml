@@ -1,0 +1,28 @@
+@model string
+@{
+    var icon = (Model ?? string.Empty).Trim().ToLowerInvariant();
+}
+@if (icon == "instagram")
+{
+    <img src="~/img/icons/instagram.svg" alt="Instagram" loading="lazy" />
+}
+else if (icon == "whatsapp")
+{
+    <img src="~/img/icons/whatsapp.svg" alt="WhatsApp" loading="lazy" />
+}
+else if (icon == "linkedin")
+{
+    <img src="~/img/icons/linkedin.svg" alt="LinkedIn" loading="lazy" />
+}
+else if (icon == "youtube")
+{
+    <img src="~/img/icons/youtube.svg" alt="YouTube" loading="lazy" />
+}
+else if (icon == "facebook")
+{
+    <img src="~/img/icons/facebook.svg" alt="Facebook" loading="lazy" />
+}
+else
+{
+    <span class="social-fallback">↗</span>
+}

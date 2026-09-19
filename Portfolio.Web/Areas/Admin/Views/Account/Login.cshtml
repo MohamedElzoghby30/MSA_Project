@@ -1,0 +1,124 @@
+@model LoginViewModel
+@inject AppLocalizer L
+@{
+    Layout = null;
+    var returnUrl = ViewData["ReturnUrl"] as string;
+    var nextCulture = L.LanguageCode == "ar" ? "en" : "ar";
+    var languageLabel = L.LanguageCode == "ar" ? "EN" : "العربية";
+}
+<!doctype html>
+<html lang="@L.LanguageCode" dir="@L.Direction">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>@L.Get("Sign In · MSA Admin")</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/admin/css/admin.css" asp-append-version="true" />
+</head>
+<body data-theme-mode="system" style="--gold:#d6a84f;--gold2:#c88a24;--gold3:#e8c778;--light-bg:#f7f8fa;--light-surface:#fff;--light-surface-alt:#f1f3f6;--light-text:#102033;--light-muted:#66758a;--light-border:#dde3ea;--light-header:#fff;--light-input:#fff;--light-shadow:rgba(16,32,51,.12);--dark-bg:#061827;--dark-surface:#0b243b;--dark-surface-alt:#0f2d49;--dark-text:#f7fafc;--dark-muted:#91a1b5;--dark-border:rgba(255,255,255,.09);--dark-header:#061827;--dark-input:#0b253c;--dark-shadow:rgba(0,0,0,.35);">
+
+    <div class="auth-page">
+
+        <div class="auth-preferences">
+            <a class="preference-link"
+               href="/Language/Set?culture=@nextCulture&returnUrl=@Uri.EscapeDataString(Context.Request.Path + Context.Request.QueryString)">
+                @languageLabel
+            </a>
+
+            <button class="preference-button"
+                    type="button"
+                    data-theme-toggle>
+                ☾
+            </button>
+        </div>
+
+        <div class="auth-card">
+
+            <div class="auth-logo">
+                <img src="~/img/brand/msa-mark.svg" alt="MSA" />
+            </div>
+
+            <span class="eyebrow-admin auth-eyebrow">
+                @L.Get("SECURE ADMINISTRATION")
+            </span>
+
+            <h1>
+                @L.Get("Admin Sign In")
+            </h1>
+
+            <div class="subtitle">
+                @L.Get("Manage MSA Gold & Jewellery Trading L.L.C.")
+            </div>
+
+            <form asp-action="Login" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="returnUrl"
+                       value="@returnUrl" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary-errors">
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email">
+                        @L.Get("Email Address")
+                    </label>
+
+                    <input asp-for="Email"
+                           class="input"
+                           autocomplete="username"
+                           placeholder="admin@portfolio.com" />
+
+                    <span asp-validation-for="Email"
+                          class="field-validation-error">
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">
+                        @L.Get("Password")
+                    </label>
+
+                    <input asp-for="Password"
+                           class="input"
+                           autocomplete="current-password"
+                           placeholder="••••••••" />
+
+                    <span asp-validation-for="Password"
+                          class="field-validation-error">
+                    </span>
+                </div>
+
+                <label class="check-row auth-remember">
+                    <input asp-for="RememberMe" />
+                    @L.Get("Remember me")
+                </label>
+
+                <button class="btn btn-primary auth-submit"
+                        type="submit">
+                    @L.Get("Sign In")
+                    <span>→</span>
+                </button>
+
+                <!-- Emergency Password Reset -->
+                <div style="text-align:center;margin-top:16px;font-size:12px;">
+                    <a href="@Url.Action("EmergencyReset", "Account", new { area = "Admin" })">
+                        Emergency Password Reset
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script src="~/admin/js/admin.js" asp-append-version="true"></script>
+    <script src="~/js/ui-preferences.js" asp-append-version="true"></script>
+
+</body>
+</html>

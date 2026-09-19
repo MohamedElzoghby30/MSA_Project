@@ -1,0 +1,210 @@
+@model SectionFormModel
+@inject AppLocalizer L
+@{
+    ViewData["Title"] = L.Get("Create Section");
+}
+<div class="page-head">
+    <div>
+        <span class="eyebrow-admin">PAGE BUILDER · SECTION</span>
+        <h2>@L.Get("Add Section")</h2>
+        <p>@L.Get("Configure layout, styling and reveal animation.")</p>
+    </div>
+</div>
+
+<form asp-action="CreateSection" method="post" enctype="multipart/form-data" class="card page-editor-card">
+    <input asp-for="PageId" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <div class="builder-section-title">
+        <span class="builder-section-icon">01</span>
+        <div><strong>@L.Get("Section content")</strong><small>@L.Get("Add both English and Arabic text so the public page changes with the language switcher.")</small></div>
+    </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label asp-for="SectionType">@L.Get("Section Type")</label>
+            <select asp-for="SectionType" class="select">
+                <option value="Hero">@L.Get("Hero")</option>
+                <option value="About">@L.Get("About")</option>
+                <option value="Products">@L.Get("Products")</option>
+                <option value="Services">@L.Get("Services")</option>
+                <option value="Features">@L.Get("Features")</option>
+                <option value="Gallery">@L.Get("Gallery")</option>
+                <option value="Testimonials">@L.Get("Testimonials")</option>
+                <option value="Statistics">@L.Get("Statistics")</option>
+                <option value="Contact">@L.Get("Contact")</option>
+                <option value="CTA">@L.Get("CTA")</option>
+                <option value="Text">@L.Get("Text")</option>
+                <option value="Image">@L.Get("Image")</option>
+                <option value="Video">@L.Get("Video")</option>
+                <option value="FAQ">@L.Get("FAQ")</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="SortOrder">@L.Get("Sort Order")</label>
+            <input asp-for="SortOrder" class="input" type="number" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TitleEn">@L.Get("Title (English)")</label>
+            <input asp-for="TitleEn" class="input" dir="ltr" />
+        </div>
+        <div class="form-group">
+            <label asp-for="TitleAr">@L.Get("Title (Arabic)")</label>
+            <input asp-for="TitleAr" class="input" dir="rtl" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SubtitleEn">@L.Get("Subtitle (English)")</label>
+            <input asp-for="SubtitleEn" class="input" dir="ltr" />
+        </div>
+        <div class="form-group">
+            <label asp-for="SubtitleAr">@L.Get("Subtitle (Arabic)")</label>
+            <input asp-for="SubtitleAr" class="input" dir="rtl" />
+        </div>
+
+        <div class="form-group full">
+            <label asp-for="DescriptionEn">@L.Get("Description (English)")</label>
+            <textarea asp-for="DescriptionEn" class="textarea" dir="ltr"></textarea>
+        </div>
+        <div class="form-group full">
+            <label asp-for="DescriptionAr">@L.Get("Description (Arabic)")</label>
+            <textarea asp-for="DescriptionAr" class="textarea" dir="rtl"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ImageFile">@L.Get("Image")</label>
+            <input asp-for="ImageFile" class="input" type="file" accept="image/*" />
+        </div>
+        <div class="form-group">
+            <label asp-for="BackgroundImageFile">@L.Get("Background Image")</label>
+            <input asp-for="BackgroundImageFile" class="input" type="file" accept="image/*" />
+        </div>
+        <div class="form-group">
+            <label asp-for="BackgroundColor">@L.Get("Background Color")</label>
+            <input asp-for="BackgroundColor" class="input" placeholder="#08233F" />
+        </div>
+        <div class="form-group">
+            <label asp-for="TextColor">@L.Get("Text Color")</label>
+            <input asp-for="TextColor" class="input" placeholder="#FFFFFF" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Animation">@L.Get("Animation")</label>
+            <select asp-for="Animation" class="select">
+                <option value="">@L.Get("None")</option>
+                <option value="fade-up">@L.Get("fade-up")</option>
+                <option value="fade-down">@L.Get("fade-down")</option>
+                <option value="fade-left">@L.Get("fade-left")</option>
+                <option value="fade-right">@L.Get("fade-right")</option>
+                <option value="zoom-in">@L.Get("zoom-in")</option>
+                <option value="scale">@L.Get("scale")</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="AnimationDuration">@L.Get("Duration") (ms)</label>
+            <input asp-for="AnimationDuration" class="input" type="number" value="700" />
+        </div>
+        <div class="form-group">
+            <label asp-for="AnimationDelay">@L.Get("Delay") (ms)</label>
+            <input asp-for="AnimationDelay" class="input" type="number" value="0" />
+        </div>
+        <div class="form-group full about-stats-editor" id="aboutStatsEditor">
+            <div class="builder-section-title">
+                <span class="builder-section-icon">02</span>
+                <div>
+                    <strong>@L.Get("About Statistics")</strong>
+                    <small>
+                        @L.Get("Customize the four statistics displayed in the About section.")
+                    </small>
+                </div>
+            </div>
+
+            @for (var i = 0; i < 4; i++)
+            {
+                <div class="about-stat-editor">
+                    <h4>Stat @(i + 1)</h4>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Value (English)</label>
+                            <input class="input"
+                                   name="Stats[@i].ValueEn"
+                                   dir="ltr"
+                                   placeholder="2025" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Value (Arabic)</label>
+                            <input class="input"
+                                   name="Stats[@i].ValueAr"
+                                   dir="rtl"
+                                   placeholder="2025" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Label (English)</label>
+                            <input class="input"
+                                   name="Stats[@i].LabelEn"
+                                   dir="ltr"
+                                   placeholder="Established" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Label (Arabic)</label>
+                            <input class="input"
+                                   name="Stats[@i].LabelAr"
+                                   dir="rtl"
+                                   placeholder="تأسست" />
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Icon (Optional)</label>
+
+                            <select class="select"
+                                    name="Stats[@i].Icon">
+
+                                <option value="">No Icon</option>
+
+                                <option value="/img/icons/diamond.svg">
+                                    Diamond
+                                </option>
+
+                                <option value="/img/icons/shield.svg">
+                                    Shield
+                                </option>
+
+                                <option value="/img/icons/location.svg">
+                                    Location
+                                </option>
+
+                                <option value="/img/icons/gold.svg">
+                                    Gold
+                                </option>
+
+                                <option value="/img/icons/trade.svg">
+                                    Trade
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <p class="form-hint">
+                @L.Get("Icon is optional. Leave it as No Icon when you do not want an icon.")
+            </p>
+        </div>
+
+        <div class="form-group full">
+            <label asp-for="SettingsJson">@L.Get("Other Settings JSON")</label>
+            <textarea asp-for="SettingsJson"
+                      class="textarea"
+                      placeholder='{"buttonText":"Learn More"}'></textarea>
+        </div>
+        <label class="check-row">
+            <input asp-for="IsVisible" /> @L.Get("Visible")
+        </label>
+    </div>
+    <div class="actions">
+        <button class="btn btn-primary" type="submit">@L.Get("Create Section")</button>
+        <a class="btn btn-ghost" asp-action="Sections" asp-route-pageId="@Model.PageId">@L.Get("Cancel")</a>
+    </div>
+</form>

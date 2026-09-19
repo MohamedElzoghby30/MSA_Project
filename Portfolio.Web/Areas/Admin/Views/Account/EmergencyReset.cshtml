@@ -1,0 +1,133 @@
+﻿@model EmergencyResetViewModel
+@inject AppLocalizer L
+
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="@L.LanguageCode" dir="@L.Direction">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Emergency Password Reset · MSA Admin</title>
+
+    <link rel="stylesheet"
+          href="~/admin/css/admin.css"
+          asp-append-version="true" />
+</head>
+
+<body>
+
+    <div class="auth-page">
+
+        <div class="auth-card">
+
+            <div class="auth-logo">
+                <img src="~/img/brand/msa-mark.svg" alt="MSA" />
+            </div>
+
+            <span class="eyebrow-admin auth-eyebrow">
+                EMERGENCY ACCESS
+            </span>
+
+            <h1>Reset Password</h1>
+
+            <div class="subtitle">
+                Use the emergency key to reset a user's password
+                and unlock the account.
+            </div>
+
+            <form asp-action="EmergencyReset"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary-errors">
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email">
+                        User Email
+                    </label>
+
+                    <input asp-for="Email"
+                           class="input"
+                           autocomplete="username"
+                           placeholder="admin@portfolio.com" />
+
+                    <span asp-validation-for="Email"
+                          class="field-validation-error">
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="EmergencyKey">
+                        Emergency Key
+                    </label>
+
+                    <input asp-for="EmergencyKey"
+                           class="input"
+                           type="password"
+                           autocomplete="off"
+                           placeholder="Emergency key" />
+
+                    <span asp-validation-for="EmergencyKey"
+                          class="field-validation-error">
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NewPassword">
+                        New Password
+                    </label>
+
+                    <input asp-for="NewPassword"
+                           class="input"
+                           type="password"
+                           autocomplete="new-password"
+                           placeholder="New password" />
+
+                    <span asp-validation-for="NewPassword"
+                          class="field-validation-error">
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">
+                        Confirm New Password
+                    </label>
+
+                    <input asp-for="ConfirmPassword"
+                           class="input"
+                           type="password"
+                           autocomplete="new-password"
+                           placeholder="Repeat new password" />
+
+                    <span asp-validation-for="ConfirmPassword"
+                          class="field-validation-error">
+                    </span>
+                </div>
+
+                <button class="btn btn-primary auth-submit"
+                        type="submit">
+                    Reset Password
+                    <span>→</span>
+                </button>
+
+                <div style="text-align:center;margin-top:16px;font-size:12px;">
+                    <a href="@Url.Action("Login", "Account", new { area = "Admin" })">
+                        Back to Sign In
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
